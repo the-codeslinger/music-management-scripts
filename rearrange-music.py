@@ -2,6 +2,8 @@ import os
 import taglib
 import argparse
 import shutil
+import string
+import unicodedata
 
 ARTIST_TAG = "ARTIST"
 ALBUM_TAG = "ALBUM"
@@ -11,6 +13,19 @@ GENRE_TAG = "GENRE"
 TNUM_TAG = "TRACKNUMBER"
 
 SUPPORTED_TAGS = [ARTIST_TAG, ALBUM_TAG, TITLE_TAG, DATE_TAG, GENRE_TAG, TNUM_TAG]
+VALID_FNAME_CHARS = "-_() %s%s" % (string.ascii_letters, string.digits)
+CHAR_LIMIT = 255
+
+# Thx to https://gist.github.com/wassname/1393c4a57cfcbf03641dbc31886123b8 for this method.
+def clean_filename(filename, whitelist=VALID_FNAME_CHARS):
+    # keep only valid ascii chars
+    cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
+    
+    # keep only whitelisted chars
+    cleaned_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+    if len(cleaned_filename)>CHAR_LIMIT:
+        print("Warning, filename truncated because it was over {}. Filenames may no longer be unique".format(CHAR_LIMIT))
+    return cleaned_filename[:CHAR_LIMIT] 
 
 def is_hidden(name):
     return name[0] == "."
@@ -65,7 +80,7 @@ def dest_fname(src, dest, file, format):
     # Replace all placeholders with values.
     for tag in tags:
         if tag in newpath:
-            newpath = newpath.replace(tag, tags[tag])
+            newpath = newpath.replace(tag, clean_filename(tags[tag]))
     
     # Extract the file name so we have it separately. We also need to attach the extension.
     _, ext = os.path.splitext(srcfile)

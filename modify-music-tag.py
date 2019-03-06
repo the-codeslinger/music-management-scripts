@@ -2,6 +2,9 @@ import os
 import taglib
 import argparse
 
+def is_hidden(name):
+    return name[0] == "."
+    
 def concat_with_sep(path, other):
     pathcopy = path
     if not path.endswith(os.sep):
@@ -27,7 +30,8 @@ def modify_tags(file, args):
 def read_dir(dir, args):
     for subdir, _, files in os.walk(dir):
         for file in files:
-            modify_tags(concat_with_sep(subdir, file), args)
+            if not is_hidden(file):
+                modify_tags(concat_with_sep(subdir, file), args)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--src", help="Folder or file to read", required=True)
