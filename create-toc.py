@@ -3,8 +3,6 @@
 # file from that information. This file can later be used by 
 # conversion tools/scripts.
 # 
-# pip install pathvalidate
-# 
 # Usage example:
 #   python3 create-toc.py \
 #       -s Music \
@@ -12,8 +10,6 @@
 #       -f "artist,album,year,genre,track,title" \
 #       -r \
 #       -t wav
-# 
-# python3 create-toc.py -f "artist,album,year,genre,track,title" -s /home/rlo/Music -d "#" -r -t wav
 # 
 # See `python3 create-toc.py --help` for details.
 
