@@ -1,0 +1,14 @@
+{
+    "format": [
+        "artist",
+        "album",
+        "year",
+        "genre",
+        "track",
+        "title"
+    ],
+    "delim": "#",
+    "source": "E:\\Music\\Purchased\\Disc\\Melli",
+    "recurse": true,
+    "type": "wav"
+}
