@@ -1,0 +1,18 @@
+{
+  "input": {
+    "path": "E:\\Music\\Purchased\\Disc\\Album",
+    "type": "wav",
+    "recurse": true
+  },
+  "output": [
+    {
+      "type": "mp3",
+      "path": "E:\\Music\\Compressed",
+      "format": "genre\\artist\\year - album\\track - title",
+      "converter": {
+        "args": ["-V1", "%input%", "%output%"],
+        "bin":  "C:\\Applications\\Lame\\lame.exe"
+      }
+    }
+  ]
+}
