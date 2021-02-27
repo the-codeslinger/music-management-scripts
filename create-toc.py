@@ -133,7 +133,7 @@ def read_tags(filename, config):
 
 def write_toc_file(dir, record_metadata):
     with codecs.open(os.path.join(dir, TOC_FILENAME), "w", encoding="UTF-8") as json_file:
-        json.dump(record_metadata, json_file, indent=2)
+        json.dump(record_metadata, json_file, indent=2, ensure_ascii=False)
 
 def rename_files(dir, record_metadata):
     for track_info in record_metadata[TRACK_LIST_NAME]:
