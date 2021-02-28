@@ -9,6 +9,7 @@ files of a (my) local digital music library.
 * [pytaglib](https://pypi.org/project/pytaglib/)
 * [libtaglib](https://taglib.org) (required by pytaglib)
 * [pathvalidate](https://pypi.org/project/pathvalidate/) (required by `create_toc.py`)
+* [eyeD3](https://eyed3.readthedocs.io/en/latest/index.html) (required by `convert-music.py`)
 
 ## General
 
@@ -73,12 +74,12 @@ follow a consistent naming scheme. The artist's name and album title
 (or the equivalent of a compilation) must be the same for every file.
 
 The purpose is for each folder to contain a JSON file, the TOC, or
-table of contents that has the relevant metadata about an audio disc.
+table of contents, that has the relevant metadata about an audio disc.
 This way, the file names can be simplified and do not require any more
-special encoding. This script helps to convert from my old naming
-scheme to a more modern way. This includes getting rid of encoded 
-characters like `&47;` for `/`, `&58;` for `:`, `&63;` for `?`, 
-and `&92;` for `\`.
+special encoding. This script helps to convert an encoded naming
+scheme created by ripping an audio disc to a more modern way. This 
+includes getting rid of encoded characters like `&47;` for `/`, `&58;` 
+for `:`, `&63;` for `?`, and `&92;` for `\`.
 
 The `ToC.json` looks like this.
 
@@ -106,12 +107,12 @@ The `ToC.json` looks like this.
 ```
 
 The original "long" filename is retained in case something goes wrong
-during TOC creation and renaming from "long" to "short". This way, all
-the information is still available.
+during TOC creation while renaming from "long" to "short". This way,
+all the information is still available.
 
-The naming scheme can be configured using the `--format` argument.
-The following types of tags are supported, separated by a comma. Not
-all values are required, but you cannot specify more tags than are
+The naming scheme can be configured using the `format` option in the
+configuration file. The following types of tags are supported. Not all
+values are required, but you cannot specify more tags than are
 available in the filename.
 
 * artist
@@ -122,10 +123,51 @@ available in the filename.
 * title
 
 This way, you can configure the parser to your naming scheme. The tag
-delimiter can be provided with `--delim`. The script only scans for a
+delimiter can be provided with `delim`. The script only scans for a
 specific file type that is identified by the file's extension. The
-argument `--type` configures this extension. Note: do **not** include
+argument `type` configures this extension. Note: do **not** include
 the dot, e.g. use `-t wav` instead of `.wav`. This value is also used
 for renaming the files.
 
-    python3 create-toc.py -f "artist,album,year,genre,track,title" -s /home/rlo/Music -d "#" -r -t wav
+You can also specify a config file on the command line if the default
+location in `<script-dir>/etc` does not suit you.
+
+    python3 create-toc.py --config /opt/music-scripts/table-of-content.json
+
+## Convert WAV to MP3 (convert-music.py)
+
+Convert all files mentioned in a `ToC.json` file to compressed audio
+as configured in the settings file (default
+`<script-dir>/etc/convert-music.json`). The setting file can contain
+multiple compressor configurations from which one must be selected on
+the command line using the `--type` option.
+
+The call to the converter's command line supports `%input%` and
+`%output%` parameters that are replaced with the source WAV file and
+the output MP3 file.
+
+Although the configuration and script support multiple output formats,
+writing metadata is currently limited to ID3, i.e. the only output
+effectively supported is MP3. This is due to the fact that eyed3 is
+used as a tagging library, not pytaglib. The latter does not support
+cover art in Python scripts whereas eyed3 does for MP3 - which is good
+enough for me.
+
+You can also specify a config file on the command line if the default
+location in `<script-dir>/etc` does not suit you.
+
+    python3 convert-music.py --type mp3 --config /opt/music-scripts/converter.json
+
+## Rename Files (file-renamer.py)
+
+This little script reads the `ToC.json` file in every directory  and
+renames the files based on the hard-coded rules in its `sanitize`
+function. The `ToC.json` is updated accordingly. This script is not
+part of any workflow and more or less serves as an additional utility
+in case I change my mind regarding the file name format.
+
+The only argument is the source path to scan and scanning is performed
+recursively.
+
+  python3 file-renamer --source /home/rlo/audio-discs
+
